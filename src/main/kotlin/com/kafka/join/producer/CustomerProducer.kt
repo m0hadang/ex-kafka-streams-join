@@ -4,23 +4,13 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.kafka.join.Customer
-import org.apache.kafka.clients.producer.KafkaProducer
-import org.apache.kafka.clients.producer.ProducerConfig
+import com.kafka.join.Topics
 import org.apache.kafka.clients.producer.ProducerRecord
-import org.apache.kafka.common.serialization.StringSerializer
 import java.time.Instant
-import java.util.*
 
 fun main() {
 
-    val producer = KafkaProducer<String, String>(
-        Properties().apply {
-            put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092")
-            put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer::class.java)
-            put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer::class.java)
-            put(ProducerConfig.ACKS_CONFIG, "all")
-        }
-    )
+    val producer = ProducerBuilder.buildProducer()
 
     val objectMapper = ObjectMapper().apply {
         registerModule(KotlinModule.Builder().build())
@@ -42,7 +32,7 @@ fun main() {
         // Send initial customer data
         customers.forEach { customer ->
             val customerJson = objectMapper.writeValueAsString(customer)
-            val record = ProducerRecord("customers-topic", customer.customerId, customerJson)
+            val record = ProducerRecord(Topics.CUSTOMERS_TOPIC, customer.customerId, customerJson)
 
             producer.send(record) { metadata, exception ->
                 if (exception != null) {
@@ -70,7 +60,7 @@ fun main() {
             )
 
             val customerJson = objectMapper.writeValueAsString(updatedCustomer)
-            val record = ProducerRecord("customers-topic", updatedCustomer.customerId, customerJson)
+            val record = ProducerRecord(Topics.CUSTOMERS_TOPIC, updatedCustomer.customerId, customerJson)
 
             producer.send(record) { metadata, exception ->
                 if (exception != null) {

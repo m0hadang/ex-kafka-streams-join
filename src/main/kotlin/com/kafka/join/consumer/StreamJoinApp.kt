@@ -7,6 +7,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.kafka.join.Customer
 import com.kafka.join.EnrichedOrder
 import com.kafka.join.Order
+import com.kafka.join.Topics
 import com.kafka.join.jsonSerde
 import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.KafkaStreams
@@ -31,7 +32,7 @@ fun main() {
 
     // Convert customers stream to KTable for join (must specify serdes for state store)
     val customersTable: KTable<String, Customer> = builder
-        .stream<String, String>("customers-topic")
+        .stream<String, String>(Topics.CUSTOMERS_TOPIC)
         .mapValues { value ->
             objectMapper.readValue<Customer>(value)
         }
@@ -41,7 +42,7 @@ fun main() {
 
     // Join orders with customers
     val enrichedOrders: KStream<String, EnrichedOrder> = builder
-        .stream<String, String>("orders-topic")
+        .stream<String, String>(Topics.ORDERS_TOPIC)
         .mapValues { value ->
             objectMapper.readValue<Order>(value)
         }

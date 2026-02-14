@@ -4,23 +4,13 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.kafka.join.Order
-import org.apache.kafka.clients.producer.KafkaProducer
-import org.apache.kafka.clients.producer.ProducerConfig
+import com.kafka.join.Topics
 import org.apache.kafka.clients.producer.ProducerRecord
-import org.apache.kafka.common.serialization.StringSerializer
 import java.time.Instant
-import java.util.*
 import kotlin.random.Random
 
 fun main() {
-    val producer = KafkaProducer<String, String>(
-        Properties().apply {
-            put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092")
-            put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer::class.java)
-            put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer::class.java)
-            put(ProducerConfig.ACKS_CONFIG, "all")
-        }
-    )
+    val producer = ProducerBuilder.buildProducer()
 
     var orderCounter = 1
     val customerIds = listOf(
@@ -55,7 +45,7 @@ fun main() {
             )
 
             val orderJson = objectMapper.writeValueAsString(order)
-            val record = ProducerRecord("orders-topic", order.orderId, orderJson)
+            val record = ProducerRecord(Topics.ORDERS_TOPIC, order.orderId, orderJson)
 
             producer.send(record) { metadata, exception ->
                 if (exception != null) {
