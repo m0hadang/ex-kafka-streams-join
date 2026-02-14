@@ -1,0 +1,8 @@
+.gradle/
+build/
+kafka-streams-state/
+.idea/
+*.iml
+*.log
+.DS_Store
+out/
