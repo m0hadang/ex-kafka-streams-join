@@ -21,7 +21,7 @@ dependencies {
 }
 
 application {
-    mainClass.set("com.kafka.join.consumer.StreamTableLeftJoinConsumerKt")
+    mainClass.set("com.kafka.join.consumer.StreamTableLeftConsumerKt")
 }
 
 tasks.register<JavaExec>("runOrderProducer") {
@@ -38,18 +38,18 @@ tasks.register<JavaExec>("runCustomerProducer") {
     mainClass.set("com.kafka.join.producer.CustomerProducerKt")
 }
 
-tasks.register<JavaExec>("runStreamStreamInnerJoinConsumer") {
+tasks.register<JavaExec>("runStreamStreamInnerConsumer") {
     group = "application"
     description = "Runs the Stream-Stream Inner Join Consumer"
     classpath = sourceSets["main"].runtimeClasspath
-    mainClass.set("com.kafka.join.consumer.StreamStreamInnerJoinConsumerKt")
+    mainClass.set("com.kafka.join.consumer.StreamStreamInnerConsumerKt")
 }
 
-tasks.register<JavaExec>("runInnerJoinConsumer") {
+tasks.register<JavaExec>("runStreamTableInnerConsumer") {
     group = "application"
     description = "Runs the Inner Join Consumer"
     classpath = sourceSets["main"].runtimeClasspath
-    mainClass.set("com.kafka.join.consumer.StreamTableInnerJoinConsumerKt")
+    mainClass.set("com.kafka.join.consumer.StreamTableInnerConsumerKt")
 }
 
 tasks.test {
