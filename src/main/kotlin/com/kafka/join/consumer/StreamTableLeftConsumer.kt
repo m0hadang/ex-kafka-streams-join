@@ -36,7 +36,7 @@ fun main() {
 
                 // customer is nullable
 
-                val customerOrder = customer?.let {
+                val co = customer?.let {
                     CustomerOrder(
                         orderId = order.orderId,
                         customerId = order.customerId,
@@ -54,9 +54,9 @@ fun main() {
                     timestamp = order.timestamp
                 )
 
-                println("[customer order consumer] customerId: ${customerOrder.customerId}, customerTier: ${customerOrder.customerTier}")
+                println("[consumer join] customerId: ${co.customerId}, orderId: ${co.orderId}, tier: ${co.customerTier}")
 
-                customerOrder
+                co
             },
             Joined.with(Serdes.String(), orderSerde, customerSerde)
         )
