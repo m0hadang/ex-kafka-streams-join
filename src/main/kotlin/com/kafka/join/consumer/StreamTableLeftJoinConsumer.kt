@@ -12,13 +12,9 @@ fun main() {
 
     val builder = StreamsBuilder()
 
-    // Create KStreams from topics
-    // Parse JSON to objects
-
     val orderSerde = jsonSerde<Order>(objectMapper)
     val customerSerde = jsonSerde<Customer>(objectMapper)
 
-    // Convert customers stream to KTable for join (must specify serdes for state store)
     val customersTable: KTable<String, Customer> = builder
         .stream<String, String>(Topics.CUSTOMERS_TOPIC)
         .mapValues { value ->
@@ -28,7 +24,6 @@ fun main() {
         .groupByKey(Grouped.with(Serdes.String(), customerSerde))
         .reduce({ _, newValue -> newValue }, Materialized.with(Serdes.String(), customerSerde))
 
-    // Join orders with customers
     val customerOrders: KStream<String, CustomerOrder> = builder
         .stream<String, String>(Topics.ORDERS_TOPIC)
         .mapValues { value ->
@@ -64,7 +59,6 @@ fun main() {
             Joined.with(Serdes.String(), orderSerde, customerSerde)
         )
 
-    // Output customer orders to a new topic
     customerOrders
         .selectKey { _, customer -> customer.orderId }
         .mapValues { customerOrder ->

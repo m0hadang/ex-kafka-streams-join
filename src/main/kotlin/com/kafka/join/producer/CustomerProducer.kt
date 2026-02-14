@@ -21,7 +21,6 @@ fun main() {
     println("[customer producer] Press Ctrl+C to stop")
 
     runCatching {
-        // Send initial customer data
         customers.forEach { customer ->
             val customerJson = objectMapper.writeValueAsString(customer)
             val record = ProducerRecord(Topics.CUSTOMERS_TOPIC, customer.customerId, customerJson)
@@ -35,7 +34,6 @@ fun main() {
             }
         }
 
-        // Wait a bit, then send updates periodically
         Thread.sleep(5000)
 
         var updateCounter = 0

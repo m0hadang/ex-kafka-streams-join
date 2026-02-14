@@ -21,7 +21,6 @@ fun main() {
         .groupByKey(Grouped.with(Serdes.String(), customerSerde))
         .reduce({ _, newValue -> newValue }, Materialized.with(Serdes.String(), customerSerde))
 
-    // Inner join: emits ONLY when both order and customer match (no null customer)
     val customerOrders: KStream<String, CustomerOrder> = builder
         .stream<String, String>(Topics.ORDERS_TOPIC)
         .mapValues { value -> objectMapper.readValue<Order>(value) }
