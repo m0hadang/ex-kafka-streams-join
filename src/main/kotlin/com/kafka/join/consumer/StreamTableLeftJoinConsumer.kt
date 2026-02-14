@@ -5,9 +5,7 @@ import com.kafka.join.*
 import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.KafkaStreams
 import org.apache.kafka.streams.StreamsBuilder
-import org.apache.kafka.streams.StreamsConfig
 import org.apache.kafka.streams.kstream.*
-import java.util.*
 
 fun main() {
     val objectMapper = ObjectMapperBuilder.build()
@@ -76,14 +74,7 @@ fun main() {
 
     val streams = KafkaStreams(
         builder.build(),
-        Properties().apply {
-            put(StreamsConfig.APPLICATION_ID_CONFIG, "kafka-stream-join-app")
-            put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092")
-            put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().javaClass)
-            put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().javaClass)
-            put(StreamsConfig.COMMIT_INTERVAL_MS_CONFIG, 1000)
-            put(StreamsConfig.STATE_DIR_CONFIG, "build/kafka-streams-state")
-        }
+        PropertyBuilder.build("kafka-state-stream-table-left"),
     )
 
     // Add shutdown hook
