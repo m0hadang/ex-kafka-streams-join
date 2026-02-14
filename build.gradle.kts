@@ -21,7 +21,7 @@ dependencies {
 }
 
 application {
-    mainClass.set("com.kafka.join.consumer.StreamTableLeftJoinAppKt")
+    mainClass.set("com.kafka.join.consumer.StreamTableLeftJoinConsumerKt")
 }
 
 tasks.register<JavaExec>("runOrderProducer") {
