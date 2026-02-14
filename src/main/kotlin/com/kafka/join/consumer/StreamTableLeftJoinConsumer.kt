@@ -34,6 +34,8 @@ fun main() {
             customersTable,
             { order: Order, customer: Customer? ->
 
+                // customer is nullable
+
                 val customerOrder = customer?.let {
                     CustomerOrder(
                         orderId = order.orderId,
@@ -64,7 +66,7 @@ fun main() {
         .mapValues { customerOrder ->
             objectMapper.writeValueAsString(customerOrder)
         }
-        .to(Topics.CUSTOMER_ORDERS_TOPIC)
+        .to(Topics.CUSTOMER_ORDERS_STREAM_TABLE_LEFT_TOPIC)
 
     val streams = KafkaStreams(
         builder.build(),
@@ -74,17 +76,13 @@ fun main() {
     // Add shutdown hook
     Runtime.getRuntime().addShutdownHook(
         Thread {
-            println("Shutting down streams...")
+            println("Shutting Kafka Streams join consumer...")
             streams.close()
         }
     )
 
-    println("Starting Kafka Streams join application...")
-    println("Topics:")
-    println("  - orders-topic: Input orders stream")
-    println("  - customers-topic: Input customers stream")
-    println("  - customer-orders-topic: Output customer orders")
-    println("\nApplication is running. Press Ctrl+C to stop.")
+    println("Starting Kafka join consumer...")
+    println("Output: ${Topics.CUSTOMER_ORDERS_STREAM_TABLE_LEFT_TOPIC} (orders+customers within 5min window)")
 
     streams.start()
 }

@@ -20,8 +20,9 @@ class Topics {
     companion object {
         const val ORDERS_TOPIC = "orders-topic"
         const val CUSTOMERS_TOPIC = "customers-topic"
-        const val CUSTOMER_ORDERS_TOPIC = "customer-orders-topic"
-        const val CUSTOMER_ORDERS_INNER_TOPIC = "customer-orders-inner-topic"
+        const val CUSTOMER_ORDERS_STREAM_TABLE_LEFT_TOPIC = "customer-orders-stream-table-left-topic"
+        const val CUSTOMER_ORDERS_STREAM_TABLE_INNER_TOPIC = "customer-orders-stream-table-inner-topic"
+        const val CUSTOMER_ORDERS_STREAM_STREAM_INNER_TOPIC = "customer-orders-stream-stream-inner-topic"
     }
 }
 

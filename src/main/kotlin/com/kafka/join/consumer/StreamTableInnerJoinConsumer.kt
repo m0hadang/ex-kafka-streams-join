@@ -28,6 +28,9 @@ fun main() {
         .join(
             customersTable,
             { order: Order, customer: Customer ->
+
+                // customer is not nullable
+
                 val customerOrder = CustomerOrder(
                     orderId = order.orderId,
                     customerId = order.customerId,
@@ -45,7 +48,7 @@ fun main() {
     customerOrders
         .selectKey { _, co -> co.orderId }
         .mapValues { co -> objectMapper.writeValueAsString(co) }
-        .to(Topics.CUSTOMER_ORDERS_INNER_TOPIC)
+        .to(Topics.CUSTOMER_ORDERS_STREAM_TABLE_INNER_TOPIC)
 
     val streams = KafkaStreams(
         builder.build(),
@@ -53,11 +56,11 @@ fun main() {
     )
 
     Runtime.getRuntime().addShutdownHook(Thread {
-        println("Shutting down inner join consumer...")
+        println("Shutting Kafka Streams join consumer...")
         streams.close()
     })
 
-    println("Starting Kafka Streams inner join consumer...")
-    println("Output: ${Topics.CUSTOMER_ORDERS_INNER_TOPIC} (only orders with matching customer)")
+    println("Starting Kafka join consumer...")
+    println("Output: ${Topics.CUSTOMER_ORDERS_STREAM_TABLE_INNER_TOPIC} (only orders with matching customer)")
     streams.start()
 }
