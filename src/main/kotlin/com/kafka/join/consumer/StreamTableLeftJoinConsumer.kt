@@ -61,16 +61,18 @@ fun main() {
             Joined.with(Serdes.String(), orderSerde, customerSerde)
         )
 
+    val consumerConfig = ConsumerConfig(name = "customer-orders-stream-table-left")
+
     customerOrders
         .selectKey { _, customer -> customer.orderId }
         .mapValues { customerOrder ->
             objectMapper.writeValueAsString(customerOrder)
         }
-        .to(Topics.CUSTOMER_ORDERS_STREAM_TABLE_LEFT_TOPIC)
+        .to(consumerConfig.getTopic())
 
     val streams = KafkaStreams(
         builder.build(),
-        PropertyBuilder.build("kafka-state-stream-table-left"),
+        consumerConfig.getProperties(),
     )
 
     // Add shutdown hook
@@ -82,7 +84,7 @@ fun main() {
     )
 
     println("Starting Kafka join consumer...")
-    println("Output: ${Topics.CUSTOMER_ORDERS_STREAM_TABLE_LEFT_TOPIC} (orders+customers within 5min window)")
+    println("Output: ${consumerConfig.getTopic()} (orders+customers within 5min window)")
 
     streams.start()
 }

@@ -1,9 +1,9 @@
 package com.kafka.join.consumer
 
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.kafka.join.ConsumerConfig
 import com.kafka.join.Customer
 import com.kafka.join.CustomerOrder
-import com.kafka.join.PropertyBuilder
 import com.kafka.join.Topics
 import com.kafka.join.ObjectMapperBuilder
 import com.kafka.join.Order
@@ -57,14 +57,16 @@ fun main() {
         StreamJoined.with(Serdes.String(), orderSerde, customerSerde)
     )
 
+    val consumerConfig = ConsumerConfig(name = "customer-orders-stream-stream-inner")
+
     customerOrders
         .selectKey { _, co -> co.orderId }
         .mapValues { co -> objectMapper.writeValueAsString(co) }
-        .to(Topics.CUSTOMER_ORDERS_STREAM_STREAM_INNER_TOPIC)
+        .to(consumerConfig.getTopic())
 
     val streams = KafkaStreams(
         builder.build(),
-        PropertyBuilder.build("kafka-state-stream-stream-inner")
+        consumerConfig.getProperties()
     )
 
     Runtime.getRuntime().addShutdownHook(Thread {
@@ -73,6 +75,6 @@ fun main() {
     })
 
     println("Starting Kafka join consumer...")
-    println("Output: ${Topics.CUSTOMER_ORDERS_STREAM_STREAM_INNER_TOPIC} (orders+customers within 5min window)")
+    println("Output: ${consumerConfig.getTopic()} (orders+customers within 5min window)")
     streams.start()
 }

@@ -45,14 +45,16 @@ fun main() {
             Joined.with(Serdes.String(), orderSerde, customerSerde)
         )
 
+    val consumerConfig = ConsumerConfig(name = "customer-orders-stream-table-inner")
+
     customerOrders
         .selectKey { _, co -> co.orderId }
         .mapValues { co -> objectMapper.writeValueAsString(co) }
-        .to(Topics.CUSTOMER_ORDERS_STREAM_TABLE_INNER_TOPIC)
+        .to(consumerConfig.getTopic())
 
     val streams = KafkaStreams(
         builder.build(),
-        PropertyBuilder.build("kafka-state-stream-table-inner"),
+        consumerConfig.getProperties(),
     )
 
     Runtime.getRuntime().addShutdownHook(Thread {
@@ -61,6 +63,6 @@ fun main() {
     })
 
     println("Starting Kafka join consumer...")
-    println("Output: ${Topics.CUSTOMER_ORDERS_STREAM_TABLE_INNER_TOPIC} (only orders with matching customer)")
+    println("Output: ${consumerConfig.getTopic()} (only orders with matching customer)")
     streams.start()
 }
