@@ -75,6 +75,5 @@ fun main() {
     })
 
     println("Starting Kafka join consumer...")
-    println("Output: ${consumerConfig.getTopic()} (all orders; tier=Unknown when no customer in window)")
     streams.start()
 }

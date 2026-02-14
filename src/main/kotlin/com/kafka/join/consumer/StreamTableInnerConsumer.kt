@@ -63,6 +63,5 @@ fun main() {
     })
 
     println("Starting Kafka join consumer...")
-    println("Output: ${consumerConfig.getTopic()} (only orders with matching customer)")
     streams.start()
 }

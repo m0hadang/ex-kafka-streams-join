@@ -75,7 +75,6 @@ fun main() {
     )
 
     println("Starting Kafka join consumer...")
-    println("Output: ${consumerConfig.getTopic()} (orders+customers within 5min window)")
 
     streams.start()
 }
