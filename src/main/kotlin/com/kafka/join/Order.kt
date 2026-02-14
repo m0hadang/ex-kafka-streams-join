@@ -17,7 +17,7 @@ data class Customer(
     @JsonProperty("timestamp") val timestamp: Instant = Instant.now()
 )
 
-data class EnrichedOrder(
+data class CustomerOrder(
     @JsonProperty("orderId") val orderId: String,
     @JsonProperty("customerId") val customerId: String,
     @JsonProperty("customerTier") val customerTier: String,

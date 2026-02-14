@@ -5,7 +5,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.kafka.join.Customer
-import com.kafka.join.EnrichedOrder
+import com.kafka.join.CustomerOrder
 import com.kafka.join.Order
 import com.kafka.join.Topics
 import com.kafka.join.jsonSerde
@@ -41,7 +41,7 @@ fun main() {
         .reduce({ _, newValue -> newValue }, Materialized.with(Serdes.String(), customerSerde))
 
     // Join orders with customers
-    val enrichedOrders: KStream<String, EnrichedOrder> = builder
+    val customerOrders: KStream<String, CustomerOrder> = builder
         .stream<String, String>(Topics.ORDERS_TOPIC)
         .mapValues { value ->
             objectMapper.readValue<Order>(value)
@@ -52,7 +52,7 @@ fun main() {
             { order: Order, customer: Customer? ->
                 if (customer != null) {
                     println("[consumer] ${customer.customerId}")
-                    EnrichedOrder(
+                    CustomerOrder(
                         orderId = order.orderId,
                         customerId = order.customerId,
                         customerTier = customer.tier,
@@ -62,7 +62,7 @@ fun main() {
                     )
                 } else {
                     println("[consumer] Unknown")
-                    EnrichedOrder(
+                    CustomerOrder(
                         orderId = order.orderId,
                         customerId = order.customerId,
                         customerTier = "BRONZE",
@@ -75,13 +75,13 @@ fun main() {
             Joined.with(Serdes.String(), orderSerde, customerSerde)
         )
 
-    // Output enriched orders to a new topic
-    enrichedOrders
-        .selectKey { _, enriched -> enriched.orderId }
-        .mapValues { enriched ->
-            objectMapper.writeValueAsString(enriched)
+    // Output customer orders to a new topic
+    customerOrders
+        .selectKey { _, customer -> customer.orderId }
+        .mapValues { customerOrder ->
+            objectMapper.writeValueAsString(customerOrder)
         }
-        .to("enriched-orders-topic")
+        .to(Topics.CUSTOMER_ORDERS_TOPIC)
 
     val streams = KafkaStreams(
         builder.build(),
@@ -107,7 +107,7 @@ fun main() {
     println("Topics:")
     println("  - orders-topic: Input orders stream")
     println("  - customers-topic: Input customers stream")
-    println("  - enriched-orders-topic: Output enriched orders")
+    println("  - customer-orders-topic: Output customer orders")
     println("\nApplication is running. Press Ctrl+C to stop.")
 
     streams.start()
