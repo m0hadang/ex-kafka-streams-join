@@ -17,8 +17,8 @@ fun main() {
         "CUST001",
         "CUST002",
         "CUST003",
-//        "CUST004",
-//        "CUST005",
+        "CUST004",
+        "CUST005",
     )
     val productIds = listOf(
         "PROD001",

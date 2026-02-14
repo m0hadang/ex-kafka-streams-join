@@ -36,19 +36,10 @@ fun main() {
 
                 // customer is nullable
 
-                val co = customer?.let {
-                    CustomerOrder(
-                        orderId = order.orderId,
-                        customerId = order.customerId,
-                        customerTier = customer.tier,
-                        productId = order.productId,
-                        amount = order.amount,
-                        timestamp = order.timestamp
-                    )
-                } ?: CustomerOrder(
+                val co = CustomerOrder(
                     orderId = order.orderId,
                     customerId = order.customerId,
-                    customerTier = "Unknown",
+                    customerTier = customer?.tier ?: "Unknown",
                     productId = order.productId,
                     amount = order.amount,
                     timestamp = order.timestamp

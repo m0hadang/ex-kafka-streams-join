@@ -38,6 +38,13 @@ tasks.register<JavaExec>("runCustomerProducer") {
     mainClass.set("com.kafka.join.producer.CustomerProducerKt")
 }
 
+tasks.register<JavaExec>("runStreamStreamLeftConsumer") {
+    group = "application"
+    description = "Runs the Stream-Stream Left Join Consumer"
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("com.kafka.join.consumer.StreamStreamLeftConsumerKt")
+}
+
 tasks.register<JavaExec>("runStreamStreamInnerConsumer") {
     group = "application"
     description = "Runs the Stream-Stream Inner Join Consumer"
