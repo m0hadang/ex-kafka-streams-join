@@ -50,8 +50,8 @@ fun main() {
         .leftJoin(
             customersTable,
             { order: Order, customer: Customer? ->
-                if (customer != null) {
-                    println("[consumer] ${customer.customerId}")
+
+                val customerOrder = customer?.let {
                     CustomerOrder(
                         orderId = order.orderId,
                         customerId = order.customerId,
@@ -60,17 +60,18 @@ fun main() {
                         amount = order.amount,
                         timestamp = order.timestamp
                     )
-                } else {
-                    println("[consumer] Unknown")
-                    CustomerOrder(
-                        orderId = order.orderId,
-                        customerId = order.customerId,
-                        customerTier = "BRONZE",
-                        productId = order.productId,
-                        amount = order.amount,
-                        timestamp = order.timestamp
-                    )
-                }
+                } ?: CustomerOrder(
+                    orderId = order.orderId,
+                    customerId = order.customerId,
+                    customerTier = "Unknown",
+                    productId = order.productId,
+                    amount = order.amount,
+                    timestamp = order.timestamp
+                )
+
+                println("[customer order consumer] customerId: ${customerOrder.customerId}, customerTier: ${customerOrder.customerTier}")
+
+                customerOrder
             },
             Joined.with(Serdes.String(), orderSerde, customerSerde)
         )
