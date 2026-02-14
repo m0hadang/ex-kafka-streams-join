@@ -55,11 +55,8 @@ fun main() {
                     EnrichedOrder(
                         orderId = order.orderId,
                         customerId = order.customerId,
-                        customerName = customer.name,
-                        customerEmail = customer.email,
                         customerTier = customer.tier,
                         productId = order.productId,
-                        quantity = order.quantity,
                         amount = order.amount,
                         timestamp = order.timestamp
                     )
@@ -68,11 +65,8 @@ fun main() {
                     EnrichedOrder(
                         orderId = order.orderId,
                         customerId = order.customerId,
-                        customerName = "Unknown",
-                        customerEmail = "unknown@example.com",
                         customerTier = "BRONZE",
                         productId = order.productId,
-                        quantity = order.quantity,
                         amount = order.amount,
                         timestamp = order.timestamp
                     )

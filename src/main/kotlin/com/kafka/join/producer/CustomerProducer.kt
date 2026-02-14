@@ -18,11 +18,8 @@ fun main() {
     }
 
     val customers = listOf(
-        Customer("CUST001", "Alice Johnson", "alice@example.com", "GOLD", Instant.now()),
-        Customer("CUST002", "Bob Smith", "bob@example.com", "SILVER", Instant.now()),
-//        Customer("CUST003", "Charlie Brown", "charlie@example.com", "BRONZE", Instant.now()),
-//        Customer("CUST004", "Diana Prince", "diana@example.com", "GOLD", Instant.now()),
-//        Customer("CUST005", "Eve Wilson", "eve@example.com", "SILVER", Instant.now())
+        Customer(customerId = "CUST001", tier = "GOLD", timestamp = Instant.now()),
+        Customer(customerId = "CUST002", tier = "SILVER", timestamp = Instant.now()),
     )
 
     println("[customer producer] Producing customer data to 'customers-topic'...")
@@ -38,7 +35,7 @@ fun main() {
                 if (exception != null) {
                     println("[customer producer] Error sending customer: ${exception.message}")
                 } else {
-                    println("[customer producer] Sent customer: ${customer.customerId} (${customer.name}) -> partition ${metadata.partition()}, offset ${metadata.offset()}")
+                    println("[customer producer] Sent customer: ${customer.customerId} -> partition ${metadata.partition()}, offset ${metadata.offset()}")
                 }
             }
         }
@@ -62,7 +59,7 @@ fun main() {
             val customerJson = objectMapper.writeValueAsString(updatedCustomer)
             val record = ProducerRecord(Topics.CUSTOMERS_TOPIC, updatedCustomer.customerId, customerJson)
 
-            producer.send(record) { metadata, exception ->
+            producer.send(record) { _metadata, exception ->
                 if (exception != null) {
                     println("[customer producer] Error sending customer update: ${exception.message}")
                 } else {

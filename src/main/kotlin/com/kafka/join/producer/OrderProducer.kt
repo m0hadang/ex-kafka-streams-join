@@ -39,7 +39,6 @@ fun main() {
                 orderId = "ORD${String.format("%06d", orderCounter++)}",
                 customerId = customerIds.random(),
                 productId = productIds.random(),
-                quantity = Random.nextInt(1, 10),
                 amount = Random.nextDouble(10.0, 500.0),
                 timestamp = Instant.now()
             )
