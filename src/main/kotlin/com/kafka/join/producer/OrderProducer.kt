@@ -1,8 +1,6 @@
 package com.kafka.join.producer
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.kafka.join.ObjectMapperBuilder
 import com.kafka.join.Order
 import com.kafka.join.Topics
 import org.apache.kafka.clients.producer.ProducerRecord
@@ -10,6 +8,8 @@ import java.time.Instant
 import kotlin.random.Random
 
 fun main() {
+    val objectMapper = ObjectMapperBuilder.build()
+
     val producer = ProducerBuilder.buildProducer()
 
     var orderCounter = 1
@@ -25,10 +25,6 @@ fun main() {
         "PROD002",
         "PROD003",
     )
-    val objectMapper = ObjectMapper().apply {
-        registerModule(KotlinModule.Builder().build())
-        registerModule(JavaTimeModule())
-    }
 
     println("[order producer] Producing orders to 'orders-topic'...")
     println("[order producer] Press Ctrl+C to stop")

@@ -1,9 +1,7 @@
 package com.kafka.join.producer
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.kafka.join.Customer
+import com.kafka.join.ObjectMapperBuilder
 import com.kafka.join.Topics
 import org.apache.kafka.clients.producer.ProducerRecord
 import java.time.Instant
@@ -12,10 +10,7 @@ fun main() {
 
     val producer = ProducerBuilder.buildProducer()
 
-    val objectMapper = ObjectMapper().apply {
-        registerModule(KotlinModule.Builder().build())
-        registerModule(JavaTimeModule())
-    }
+    val objectMapper = ObjectMapperBuilder.build()
 
     val customers = listOf(
         Customer(customerId = "CUST001", tier = "GOLD", timestamp = Instant.now()),

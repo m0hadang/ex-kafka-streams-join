@@ -1,14 +1,7 @@
 package com.kafka.join.consumer
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.kafka.join.Customer
-import com.kafka.join.CustomerOrder
-import com.kafka.join.Order
-import com.kafka.join.Topics
-import com.kafka.join.jsonSerde
+import com.kafka.join.*
 import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.KafkaStreams
 import org.apache.kafka.streams.StreamsBuilder
@@ -17,10 +10,7 @@ import org.apache.kafka.streams.kstream.*
 import java.util.*
 
 fun main() {
-    val objectMapper = ObjectMapper().apply {
-        registerModule(KotlinModule.Builder().build())
-        registerModule(JavaTimeModule())
-    }
+    val objectMapper = ObjectMapperBuilder.build()
 
     val builder = StreamsBuilder()
     val orderSerde = jsonSerde<Order>(objectMapper)
