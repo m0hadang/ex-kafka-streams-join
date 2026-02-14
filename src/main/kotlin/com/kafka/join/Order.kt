@@ -25,3 +25,9 @@ data class CustomerOrder(
     @JsonProperty("amount") val amount: Double,
     @JsonProperty("timestamp") val timestamp: Instant
 )
+
+/** Result of KStream-KStream outer join: one or both sides present. */
+data class OuterJoinResult(
+    @JsonProperty("order") val order: Order?,
+    @JsonProperty("customer") val customer: Customer?
+)
