@@ -27,3 +27,7 @@ podman ps
 ## Viewing Messages in Kafka UI
 
 Access Kafka UI at: http://localhost:8080
+
+## ref
+
+https://www.confluent.io/blog/crossing-streams-joins-apache-kafka/
