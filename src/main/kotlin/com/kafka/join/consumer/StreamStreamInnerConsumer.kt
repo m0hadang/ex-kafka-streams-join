@@ -35,8 +35,8 @@ fun main() {
 
     // KStream-KStream inner join: requires JoinWindows (events must arrive within time window)
     val joinWindow = JoinWindows.ofTimeDifferenceAndGrace(
-        Duration.ofMinutes(5),
-        Duration.ofMinutes(1)
+        Duration.ofSeconds(10),
+        Duration.ofSeconds(0)
     )
 
     val customerOrders: KStream<String, CustomerOrder> = ordersStream.join(
@@ -50,7 +50,7 @@ fun main() {
                 amount = order.amount,
                 timestamp = order.timestamp
             )
-            println("[consumer join] customerId: ${order.customerId}, orderId: ${co.orderId}, tier: ${co.customerTier}")
+            println("[${order.timestamp.epochSecond}][consumer join] customerId: ${order.customerId}, orderId: ${co.orderId}, tier: ${co.customerTier}")
             co
         },
         joinWindow,

@@ -35,7 +35,7 @@ fun main() {
 
     val joinWindow = JoinWindows.ofTimeDifferenceAndGrace(
         Duration.ofSeconds(10),
-        Duration.ofSeconds(5)
+        Duration.ofSeconds(0)
     )
 
     // KStream-KStream left join: emits for every order; customer is null when no match in window
@@ -50,7 +50,7 @@ fun main() {
                 amount = order.amount,
                 timestamp = order.timestamp
             )
-            println("[consumer join] customerId: ${co.customerId}, orderId: ${co.orderId}, tier: ${co.customerTier}")
+            println("[${order.timestamp.epochSecond}][consumer join] customerId: ${co.customerId}, orderId: ${co.orderId}, tier: ${co.customerTier}")
             co
         },
         joinWindow,

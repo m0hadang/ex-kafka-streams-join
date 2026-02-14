@@ -45,7 +45,7 @@ fun main() {
                     timestamp = order.timestamp
                 )
 
-                println("[consumer join] customerId: ${co.customerId}, orderId: ${co.orderId}, tier: ${co.customerTier}")
+                println("[${order.timestamp.epochSecond}][consumer join] customerId: ${co.customerId}, orderId: ${co.orderId}, tier: ${co.customerTier}")
 
                 co
             },
