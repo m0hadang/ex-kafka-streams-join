@@ -15,6 +15,7 @@ import org.apache.kafka.streams.kstream.JoinWindows
 import org.apache.kafka.streams.kstream.KStream
 import org.apache.kafka.streams.kstream.StreamJoined
 import java.time.Duration
+import kotlin.time.TimeSource
 
 fun main() {
     val objectMapper = ObjectMapperBuilder.build()
@@ -37,11 +38,14 @@ fun main() {
         Duration.ofSeconds(0)
     )
 
-    // KStream-KStream outer join: emits for every record from both streams
-    // (order, customer), (order, null), (null, customer)
+    var lastMark = TimeSource.Monotonic.markNow()
     val outerJoined: KStream<String, OuterJoinResult> = ordersStream.outerJoin(
         customersStream,
         { order: Order?, customer: Customer? ->
+
+            val elapsed = lastMark.elapsedNow()
+            lastMark = TimeSource.Monotonic.markNow()
+
             val result = OuterJoinResult(order = order, customer = customer)
             val kind = when {
                 order != null && customer != null -> "BOTH"
@@ -49,7 +53,7 @@ fun main() {
                 else -> "CUSTOMER_ONLY"
             }
             val timestamp = order?.timestamp ?: customer?.timestamp
-            println("[${timestamp?.epochSecond}][outer join] $kind customerId: ${order?.customerId ?: customer?.customerId}")
+            println("[consumer join][${timestamp?.epochSecond}][$elapsed] $kind customerId: ${order?.customerId ?: customer?.customerId}")
             result
         },
         joinWindow,

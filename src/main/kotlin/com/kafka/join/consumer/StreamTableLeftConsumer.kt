@@ -6,6 +6,7 @@ import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.KafkaStreams
 import org.apache.kafka.streams.StreamsBuilder
 import org.apache.kafka.streams.kstream.*
+import kotlin.time.TimeSource
 
 fun main() {
     val objectMapper = ObjectMapperBuilder.build()
@@ -24,6 +25,9 @@ fun main() {
         .groupByKey(Grouped.with(Serdes.String(), customerSerde))
         .reduce({ _, newValue -> newValue }, Materialized.with(Serdes.String(), customerSerde))
 
+
+    var lastMark = TimeSource.Monotonic.markNow()
+
     val customerOrders: KStream<String, CustomerOrder> = builder
         .stream<String, String>(Topics.ORDERS_TOPIC)
         .mapValues { value ->
@@ -33,6 +37,9 @@ fun main() {
         .leftJoin(
             customersTable,
             { order: Order, customer: Customer? ->
+
+                val elapsed = lastMark.elapsedNow()
+                lastMark = TimeSource.Monotonic.markNow()
 
                 // customer is nullable
 
@@ -45,7 +52,7 @@ fun main() {
                     timestamp = order.timestamp
                 )
 
-                println("[${order.timestamp.epochSecond}][consumer join] customerId: ${co.customerId}, orderId: ${co.orderId}, tier: ${co.customerTier}")
+                println("[consumer join][${order.timestamp.epochSecond}][$elapsed] customerId: ${order.customerId}, orderId: ${co.orderId}, tier: ${co.customerTier}")
 
                 co
             },

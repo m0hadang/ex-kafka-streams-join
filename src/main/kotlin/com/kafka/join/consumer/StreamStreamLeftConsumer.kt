@@ -15,6 +15,7 @@ import org.apache.kafka.streams.kstream.JoinWindows
 import org.apache.kafka.streams.kstream.KStream
 import org.apache.kafka.streams.kstream.StreamJoined
 import java.time.Duration
+import kotlin.time.TimeSource
 
 fun main() {
     val objectMapper = ObjectMapperBuilder.build()
@@ -38,10 +39,16 @@ fun main() {
         Duration.ofSeconds(0)
     )
 
+    var lastMark = TimeSource.Monotonic.markNow()
+
     // KStream-KStream left join: emits for every order; customer is null when no match in window
     val customerOrders: KStream<String, CustomerOrder> = ordersStream.leftJoin(
         customersStream,
         { order: Order, customer: Customer? ->
+
+            val elapsed = lastMark.elapsedNow()
+            lastMark = TimeSource.Monotonic.markNow()
+
             val co = CustomerOrder(
                 orderId = order.orderId,
                 customerId = order.customerId,
@@ -50,7 +57,7 @@ fun main() {
                 amount = order.amount,
                 timestamp = order.timestamp
             )
-            println("[${order.timestamp.epochSecond}][consumer join] customerId: ${co.customerId}, orderId: ${co.orderId}, tier: ${co.customerTier}")
+            println("[consumer join][${order.timestamp.epochSecond}][$elapsed] customerId: ${order.customerId}, orderId: ${co.orderId}, tier: ${co.customerTier}")
             co
         },
         joinWindow,
